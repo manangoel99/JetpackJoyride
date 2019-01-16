@@ -1,6 +1,7 @@
 #include "main.h"
 #include "timer.h"
 #include "ball.h"
+#include <iostream>
 
 using namespace std;
 
@@ -13,14 +14,16 @@ GLFWwindow *window;
 **************************/
 
 Ball ball1;
+bool jump_status = false;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 90;
 
 Timer t60(1.0 / 60);
 
+//bool jump_status = false;
 
-void move(Ball *ball, char direction) {
+void move_horizontal(Ball *ball, char direction) {
     if (direction == 'l') {
         (*ball).position.x -= 0.05;   
     }
@@ -67,15 +70,33 @@ void draw() {
     ball1.draw(VP);
 }
 
+void jump(Ball *ball) {
+    (*ball).position.y += 0.05;
+}
+
 void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
+    int up = glfwGetKey(window, GLFW_KEY_UP);
+
+    if (!up && jump_status == true) {
+        ball1.position.y -= 0.05;
+        if (ball1.position.y < 0.05 && ball1.position.y > -0.05) {
+            jump_status = false;
+        }
+    }
+
     if (left) {
-        move(&ball1, 'l');
+        move_horizontal(&ball1, 'l');
     }
 
     if (right) {
-        move(&ball1, 'r');
+        move_horizontal(&ball1, 'r');
+    }
+
+    if (up) {
+        jump_status = true;
+        jump(&ball1);
     }
 }
 
@@ -135,6 +156,7 @@ int main(int argc, char **argv) {
             glfwSwapBuffers(window);
 
             tick_elements();
+
             tick_input(window);
         }
 
