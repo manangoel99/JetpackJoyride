@@ -121,3 +121,4 @@ Temporary Items
 # End of https://www.gitignore.io/api/c++,linux,macos,cmake,qtcreator
 
 CMakeLists.txt.user
+src/graphics_asgn1
