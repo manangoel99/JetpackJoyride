@@ -7,7 +7,7 @@ Ball::Ball(float x, float y, color_t color) {
     speed = 1;
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-    static const GLfloat vertex_buffer_data[] = {
+    /*static const GLfloat vertex_buffer_data[] = {
         -1.0f,-1.0f,-1.0f, // triangle 1 : begin
         -1.0f,-1.0f, 1.0f,
         -1.0f, 1.0f, 1.0f, // triangle 1 : end
@@ -44,9 +44,18 @@ Ball::Ball(float x, float y, color_t color) {
         1.0f, 1.0f, 1.0f,
         -1.0f, 1.0f, 1.0f,
         1.0f,-1.0f, 1.0f
+    };*/
+
+    static const GLfloat vertex_buffer_data[] = {
+        0.0f, 0.0f, 0.0f,
+        0.5f, 0.0f, 0.0f,
+        0.0f, 0.5f, 0.0f,
+        0.5f, 0.5f, 0.0f,
+        0.5f, 0.0f, 0.0f,
+        0.0f, 0.5f, 0.0f,
     };
 
-    this->object = create3DObject(GL_TRIANGLES, 12*3, vertex_buffer_data, color, GL_FILL);
+    this->object = create3DObject(GL_TRIANGLES, 2*3, vertex_buffer_data, color, GL_FILL);
 }
 
 void Ball::draw(glm::mat4 VP) {
@@ -66,7 +75,8 @@ void Ball::set_position(float x, float y) {
 }
 
 void Ball::tick() {
-    this->rotation += speed;
+    this->rotation += 0;
+    // this->rotation += speed;
     // this->position.x -= speed;
     // this->position.y -= speed;
 }

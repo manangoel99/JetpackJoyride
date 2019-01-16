@@ -15,9 +15,22 @@ GLFWwindow *window;
 Ball ball1;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
-float camera_rotation_angle = 0;
+float camera_rotation_angle = 90;
 
 Timer t60(1.0 / 60);
+
+
+void move(Ball *ball, char direction) {
+    if (direction == 'l') {
+        (*ball).position.x -= 0.05;   
+    }
+
+    else if (direction == 'r') {
+        (*ball).position.x += 0.05;
+    }
+
+}
+
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -49,7 +62,7 @@ void draw() {
     // For each model you render, since the MVP will be different (at least the M part)
     // Don't change unless you are sure!!
     glm::mat4 MVP;  // MVP = Projection * View * Model
-
+    //printf("%lf", ball1.position.x);
     // Scene render
     ball1.draw(VP);
 }
@@ -58,13 +71,17 @@ void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
     if (left) {
-        // Do something
+        move(&ball1, 'l');
+    }
+
+    if (right) {
+        move(&ball1, 'r');
     }
 }
 
 void tick_elements() {
     ball1.tick();
-    camera_rotation_angle += 1;
+    camera_rotation_angle += 0;
 }
 
 /* Initialize the OpenGL rendering properties */
