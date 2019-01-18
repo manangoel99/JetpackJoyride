@@ -1,6 +1,7 @@
 #include "main.h"
 #include "timer.h"
 #include "ball.h"
+#include "ground.h"
 #include <iostream>
 
 using namespace std;
@@ -14,6 +15,7 @@ GLFWwindow *window;
 **************************/
 
 Ball ball1;
+Ground ground;
 bool jump_status = false;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
@@ -68,6 +70,7 @@ void draw() {
     //printf("%lf", ball1.position.x);
     // Scene render
     ball1.draw(VP);
+    ground.draw(VP);
 }
 
 void jump(Ball *ball) {
@@ -81,7 +84,7 @@ void tick_input(GLFWwindow *window) {
 
     if (!up && jump_status == true) {
         ball1.position.y -= 0.05;
-        if (ball1.position.y < 0.05 && ball1.position.y > -0.05) {
+        if (ball1.position.y > -1.05 && ball1.position.y < -0.95) {
             jump_status = false;
         }
     }
@@ -111,7 +114,8 @@ void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
 
-    ball1       = Ball(0, 0, COLOR_RED);
+    ball1       = Ball(0, -1, COLOR_RED);
+    ground      = Ground(0, 0, COLOR_GREEN);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
