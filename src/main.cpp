@@ -3,6 +3,8 @@
 #include "ball.h"
 #include "ground.h"
 #include <iostream>
+#include "coins.h"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -16,7 +18,11 @@ GLFWwindow *window;
 
 Ball ball1;
 Ground ground;
+float init_pos = 0;
+
+vector <Coin> coin_arr;
 bool jump_status = false;
+float speed = 0.05;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 90;
@@ -28,6 +34,7 @@ Timer t60(1.0 / 60);
 void move_horizontal(Ball *ball, char direction) {
     if (direction == 'l') {
         (*ball).position.x -= 0.05;   
+        
     }
 
     else if (direction == 'r') {
@@ -67,26 +74,39 @@ void draw() {
     // For each model you render, since the MVP will be different (at least the M part)
     // Don't change unless you are sure!!
     glm::mat4 MVP;  // MVP = Projection * View * Model
-    //printf("%lf", ball1.position.x);
     // Scene render
     ball1.draw(VP);
     ground.draw(VP);
+    for (int i = 0; i < coin_arr.size(); i++) {
+        coin_arr[i].draw(VP);
+        coin_arr[i].box.x = coin_arr[i].position.x - init_pos;
+        coin_arr[i].box.y = coin_arr[i].position.y;
+    }
 }
 
 void jump(Ball *ball) {
-    (*ball).position.y += 0.05;
+    if ((*ball).position.y <= 3.5)
+        (*ball).position.y += 0.075;
 }
 
 void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
     int up = glfwGetKey(window, GLFW_KEY_UP);
+    int down = glfwGetKey(window, GLFW_KEY_DOWN);
 
     if (!up && jump_status == true) {
-        ball1.position.y -= 0.05;
-        if (ball1.position.y > -1.05 && ball1.position.y < -0.95) {
-            jump_status = false;
+        if (ball1.position.y - speed <= -1.025) {
+            ball1.position.y = -1;
         }
+        else {
+            ball1.position.y -= speed;
+        }
+        if (ball1.position.y > -1.025 && ball1.position.y < -0.975) {
+            jump_status = false;
+            speed = 0;
+        }
+        speed += 0.0025;
     }
 
     if (left) {
@@ -105,7 +125,11 @@ void tick_input(GLFWwindow *window) {
 
 void tick_elements() {
     ball1.tick();
+    init_pos += 0.075;
     camera_rotation_angle += 0;
+    for (int i = 0; i < coin_arr.size(); i++) {
+        coin_arr[i].position.x -= 0.075;
+    }
 }
 
 /* Initialize the OpenGL rendering properties */
@@ -116,6 +140,12 @@ void initGL(GLFWwindow *window, int width, int height) {
 
     ball1       = Ball(0, -1, COLOR_RED);
     ground      = Ground(0, 0, COLOR_GREEN);
+    //coin        = Coin(0, 3, COLOR_RED);
+
+    for (int i = 0; i < 30; i++) {
+        Coin coin = Coin(rand() % 100, rand() % 4, COLOR_BLACK);
+        coin_arr.push_back(coin);
+    }
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
