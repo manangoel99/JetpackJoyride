@@ -40,5 +40,7 @@ void Ball::tick() {
     // this->rotation += speed;
     // this->position.x -= speed;
     // this->position.y -= speed;
+    this->box.x = this->position.x;
+    this->box.y = this->position.y;
 }
 

@@ -8,10 +8,12 @@ Coin::Coin(float x, float y, color_t color){
     //this->rotation = 0;
     //speed = 1;
 
-    this->box.height = 0.2;
-    this->box.width = 0.2;
+    this->box.height = 0.1;
+    this->box.width = 0.1;
+    this->box.x = this->position.x;
+    this->box.y = this->position.y;
 
-    int n = 100;
+    int n = 1000;
     float r = 0.1;
 
     GLfloat coord[9 * n];

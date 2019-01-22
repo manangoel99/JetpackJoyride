@@ -131,17 +131,27 @@ void tick_input(GLFWwindow *window) {
 }
 
 void tick_elements() {
+    cout << ball1.position.y << endl;
     ball1.tick();
-    init_pos += 0.1;
+    init_pos += 0.075;
     camera_rotation_angle += 0;
     bool flag = false;
     for (int i = 0; i < coin_arr.size(); i++) {
-        coin_arr[i].position.x -= 0.01;
+        coin_arr[i].position.x -= 0.075;
+        coin_arr[i].box.x = coin_arr[i].position.x;
         if (coin_arr[i].position.x <= -4) {
             coin_arr.erase(coin_arr.begin() + i - 1);
             flag = true;
             break;
         }
+
+        if (detect_collision(ball1.box, coin_arr[i].box)) {
+            //cout << i << '\t' << "YAYA" << endl;
+            coin_arr.erase(coin_arr.begin() + i - 1);
+            flag = true;
+            break;
+        }
+
     }
     if (flag == true) {
 
