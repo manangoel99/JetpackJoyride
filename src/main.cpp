@@ -31,6 +31,13 @@ Timer t60(1.0 / 60);
 
 //bool jump_status = false;
 
+float randomFloat(float a, float b) {
+    float random = (float) rand() / (float) RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
+
 void move_horizontal(Ball *ball, char direction) {
     if (direction == 'l') {
         (*ball).position.x -= 0.05;   
@@ -125,12 +132,26 @@ void tick_input(GLFWwindow *window) {
 
 void tick_elements() {
     ball1.tick();
-    init_pos += 0.075;
+    init_pos += 0.1;
     camera_rotation_angle += 0;
+    bool flag = false;
     for (int i = 0; i < coin_arr.size(); i++) {
-        coin_arr[i].position.x -= 0.075;
+        coin_arr[i].position.x -= 0.01;
+        if (coin_arr[i].position.x <= -4) {
+            coin_arr.erase(coin_arr.begin() + i - 1);
+            flag = true;
+            break;
+        }
+    }
+    if (flag == true) {
+
+        Coin coin = Coin(4 - randomFloat(0, 0.5), randomFloat(0, 4), COLOR_BLACK);
+
+        coin_arr.push_back(coin);
     }
 }
+
+int num_coins = 0;
 
 /* Initialize the OpenGL rendering properties */
 /* Add all the models to be created here */
@@ -142,9 +163,15 @@ void initGL(GLFWwindow *window, int width, int height) {
     ground      = Ground(0, 0, COLOR_GREEN);
     //coin        = Coin(0, 3, COLOR_RED);
 
-    for (int i = 0; i < 30; i++) {
-        Coin coin = Coin(rand() % 100, rand() % 4, COLOR_BLACK);
+    //for (int i = 0; i < 30; i++) {
+    //    Coin coin = Coin(rand() % 100, rand() % 4, COLOR_BLACK);
+    //    coin_arr.push_back(coin);
+    //}
+
+    while (num_coins != 5) {
+        Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);
         coin_arr.push_back(coin);
+        num_coins++;
     }
 
     // Create and compile our GLSL program from the shaders
