@@ -9,5 +9,6 @@ const color_t COLOR_BLACK = {52, 73, 94};
 const color_t COLOR_BACKGROUND = {242, 241, 239};
 const color_t COLOR_BLUE = {0, 0, 200};
 const color_t COLOR_ORANGE = {255, 215, 0};
+const color_t COLOR_FIRE = {255, 127, 80};
 
 #endif // !COLOR_H

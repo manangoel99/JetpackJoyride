@@ -21,6 +21,21 @@ class FireBeam {
         VAO *object;
 };
 
+class FireLine {
+    public:
+        FireLine() {};
+        FireLine(float x, float y, float angle, float length);
+        glm::vec3 position;
+        glm::vec3 final_position;
+        float speed_x;
+        void draw(glm::mat4 VP);
+        void tick();
+        float rotation;
+        float angle;
+        float length;
+    private:
+        VAO *object;
+};
 
 
 #endif // !ENEMY_H

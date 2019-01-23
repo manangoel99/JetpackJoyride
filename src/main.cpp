@@ -21,6 +21,7 @@ GLFWwindow *window;
 Ball ball1;
 Ground ground;
 vector <FireBeam> fire_list;
+vector <FireLine> fire_lint_list;
 float init_pos = 0;
 
 ll num_ticks = 0;
@@ -100,6 +101,11 @@ void draw() {
         (*it).draw(VP);
     }
 
+    for(vector <FireLine>::iterator it = fire_lint_list.begin(); it != fire_lint_list.end(); it++) {
+        (*it).draw(VP);
+    }
+
+
 }
 
 void jump(Ball *ball) {
@@ -144,7 +150,6 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     num_ticks++;
     ball1.tick();
-    //fire.tick();
     init_pos += 0.075;
     camera_rotation_angle += 0;
     bool flag = false;
@@ -185,11 +190,26 @@ void tick_elements() {
         }
 
     }
+
+    for(vector<FireLine>::iterator it = fire_lint_list.begin(); it != fire_lint_list.end(); it++) {
+        (*it).tick();
+
+        if ((*it).position.x + (*it).length * cos((*it).angle) <= -4) {
+            fire_lint_list.erase(it);
+            it--;
+        }
+    }
     
 
     if (num_ticks % 293 == 0) {
         FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4);
         fire_list.push_back(fire);
+    }
+
+    if (num_ticks % 149 == 0) {
+        FireLine fire = FireLine(4, randomFloat(0, 3), M_PI / ((rand() % 8) + 1), rand() % 3 + 1);
+        fire_lint_list.push_back(fire);
+
     }
 
 }
@@ -204,6 +224,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
     ball1       = Ball(0, -1, COLOR_RED);
     ground      = Ground(0, 0, COLOR_GREEN);
+//    fire        = FireLine(2, 2, M_PI / 3, 2);
     //fire        = FireBeam(2, 2, randomFloat(0, 1));
     //coin        = Coin(0, 3, COLOR_RED);
 
