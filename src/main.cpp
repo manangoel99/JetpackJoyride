@@ -26,6 +26,8 @@ vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
 vector <SpeedUp> speed_list;
+vector <CoinBoost> coin_boost_list;
+ll score = 0;
 
 float init_pos = 0;
 
@@ -115,6 +117,10 @@ void draw() {
     }
 
     for (vector <SpeedUp>::iterator it = speed_list.begin(); it != speed_list.end(); it++) {
+        (*it).draw(VP);
+    }
+
+    for (vector <CoinBoost>::iterator it = coin_boost_list.begin(); it != coin_boost_list.end(); it++) {
         (*it).draw(VP);
     }
 
@@ -261,12 +267,19 @@ bool detect_firebeam_balloon_collision(Balloon balloon, FireLine fire) {
 }
 
 void tick_elements() {
-    cout << ball1.life << endl;
+    //cout << ball1.life << endl;
     num_ticks++;
+
+    cout << score << endl;
+
     ball1.tick();
+    
     init_pos += 0.075;
+    
     camera_rotation_angle += 0;
+    
     bool flag = false;
+    
     for (int i = 0; i < coin_arr.size(); i++) {
         coin_arr[i].position.x -= 0.075;
         coin_arr[i].box.x = coin_arr[i].position.x;
@@ -279,6 +292,7 @@ void tick_elements() {
         if (detect_collision(ball1.box, coin_arr[i].box)) {
             coin_arr.erase(coin_arr.begin() + i - 1);
             flag = true;
+            score += 1;
             break;
         }
 
@@ -334,6 +348,7 @@ void tick_elements() {
             if (detect_collision((*it).box, (*itr).box)) {
                 fire_list.erase(itr);
                 itr--;
+                score += 5;
                 break;
             }
         }
@@ -342,6 +357,7 @@ void tick_elements() {
             if (detect_firebeam_balloon_collision(*it, *itr)) {
                 fire_lint_list.erase(itr);
                 itr--;
+                score += 5;
                 break;
             }
         }
@@ -363,6 +379,22 @@ void tick_elements() {
             speed_x += 0.025;
         }
     }
+
+    for (vector<CoinBoost>::iterator it = coin_boost_list.begin(); it != coin_boost_list.end(); it++) {
+        (*it).tick();
+
+        if ((*it).position.y <= -1) {
+            coin_boost_list.erase(it);
+            it--;
+            break;
+        }
+
+        if (detect_collision((*it).box, ball1.box)) {
+            coin_boost_list.erase(it);
+            it--;
+            score += 10;
+        }
+    }
     
 
     if (num_ticks % 293 == 0) {
@@ -379,6 +411,11 @@ void tick_elements() {
     if (num_ticks % 257 == 0) {
         SpeedUp speed = SpeedUp(4, rand() % 3 + 1);
         speed_list.push_back(speed);
+    }
+
+    if (num_ticks % 359 == 0) {
+        CoinBoost booster = CoinBoost(4, rand() % 3 + 1);
+        coin_boost_list.push_back(booster);
     }
 
 }
@@ -450,7 +487,7 @@ int main(int argc, char **argv) {
         // Poll for Keyboard and mouse events
         glfwPollEvents();
     }
-    cout << num_ticks << endl;
+    //cout << num_ticks << endl;
 
     quit(window);
 }
