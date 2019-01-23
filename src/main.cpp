@@ -4,7 +4,9 @@
 #include "ground.h"
 #include <iostream>
 #include "coins.h"
+#include "enemy.h"
 #include <bits/stdc++.h>
+#define ll long long
 
 using namespace std;
 
@@ -18,7 +20,10 @@ GLFWwindow *window;
 
 Ball ball1;
 Ground ground;
+vector <FireBeam> fire_list;
 float init_pos = 0;
+
+ll num_ticks = 0;
 
 vector <Coin> coin_arr;
 bool jump_status = false;
@@ -84,11 +89,17 @@ void draw() {
     // Scene render
     ball1.draw(VP);
     ground.draw(VP);
+
     for (int i = 0; i < coin_arr.size(); i++) {
         coin_arr[i].draw(VP);
-        coin_arr[i].box.x = coin_arr[i].position.x - init_pos;
-        coin_arr[i].box.y = coin_arr[i].position.y;
+        //coin_arr[i].box.x = coin_arr[i].position.x - init_pos;
+        //coin_arr[i].box.y = coin_arr[i].position.y;
     }
+
+    for (vector<FireBeam>::iterator it = fire_list.begin(); it != fire_list.end(); it++) {
+        (*it).draw(VP);
+    }
+
 }
 
 void jump(Ball *ball) {
@@ -131,8 +142,9 @@ void tick_input(GLFWwindow *window) {
 }
 
 void tick_elements() {
-    cout << ball1.position.y << endl;
+    num_ticks++;
     ball1.tick();
+    //fire.tick();
     init_pos += 0.075;
     camera_rotation_angle += 0;
     bool flag = false;
@@ -159,6 +171,18 @@ void tick_elements() {
 
         coin_arr.push_back(coin);
     }
+
+    
+    for (vector<FireBeam>::iterator it = fire_list.begin(); it != fire_list.end(); it++) {
+        (*it).tick();
+    }
+    
+
+    if (num_ticks % 293 == 0) {
+        FireBeam fire = FireBeam(4, randomFloat(-1, 2), randomFloat(0, 3));
+        fire_list.push_back(fire);
+    }
+
 }
 
 int num_coins = 0;
@@ -171,6 +195,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
     ball1       = Ball(0, -1, COLOR_RED);
     ground      = Ground(0, 0, COLOR_GREEN);
+    //fire        = FireBeam(2, 2, randomFloat(0, 1));
     //coin        = Coin(0, 3, COLOR_RED);
 
     //for (int i = 0; i < 30; i++) {
@@ -234,6 +259,7 @@ int main(int argc, char **argv) {
         // Poll for Keyboard and mouse events
         glfwPollEvents();
     }
+    cout << num_ticks << endl;
 
     quit(window);
 }

@@ -14,8 +14,8 @@ Ball::Ball(float x, float y, color_t color) {
         0.5f, 0.0f, 0.0f,
         0.0f, 0.5f, 0.0f,
     };
-    this->box.height = 1;
-    this->box.width = 1;
+    this->box.height = 0.5;
+    this->box.width = 0.5;
     this->object = create3DObject(GL_TRIANGLES, 2*3, vertex_buffer_data, color, GL_FILL);
 }
 
