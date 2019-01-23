@@ -188,7 +188,7 @@ void tick_elements() {
     
 
     if (num_ticks % 293 == 0) {
-        FireBeam fire = FireBeam(4, randomFloat(-1, 2), randomFloat(0, 3));
+        FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4);
         fire_list.push_back(fire);
     }
 
