@@ -7,6 +7,7 @@
 #include "enemy.h"
 #include <bits/stdc++.h>
 #include "balloon.h"
+#include "projectiles.h"
 #define ll long long
 
 using namespace std;
@@ -24,6 +25,8 @@ Ground ground;
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
+vector <SpeedUp> speed_list;
+
 float init_pos = 0;
 
 ll num_ticks = 0;
@@ -31,6 +34,8 @@ ll num_ticks = 0;
 vector <Coin> coin_arr;
 bool jump_status = false;
 float speed = 0.05;
+
+float speed_x = 0;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 90;
@@ -48,12 +53,12 @@ float randomFloat(float a, float b) {
 
 void move_horizontal(Ball *ball, char direction) {
     if (direction == 'l') {
-        (*ball).position.x -= 0.05;   
+        (*ball).position.x -= (0.05 + speed_x);   
         
     }
 
     else if (direction == 'r') {
-        (*ball).position.x += 0.05;
+        (*ball).position.x += (0.05 + speed_x);
     }
 
 }
@@ -109,6 +114,9 @@ void draw() {
         (*it).draw(VP);
     }
 
+    for (vector <SpeedUp>::iterator it = speed_list.begin(); it != speed_list.end(); it++) {
+        (*it).draw(VP);
+    }
 
 }
 
@@ -339,6 +347,22 @@ void tick_elements() {
         }
 
     }
+
+    for (vector<SpeedUp>::iterator it = speed_list.begin(); it != speed_list.end(); it++) {
+        (*it).tick();
+
+        if ((*it).position.y <= -1) {
+            speed_list.erase(it);
+            it--;
+            break;
+        }
+
+        if (detect_collision((*it).box, ball1.box)) {
+            speed_list.erase(it);
+            it--;
+            speed_x += 0.025;
+        }
+    }
     
 
     if (num_ticks % 293 == 0) {
@@ -350,6 +374,11 @@ void tick_elements() {
         FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 1), rand() % 2 + 1);
         fire_lint_list.push_back(fire);
 
+    }
+
+    if (num_ticks % 257 == 0) {
+        SpeedUp speed = SpeedUp(4, rand() % 3 + 1);
+        speed_list.push_back(speed);
     }
 
 }
