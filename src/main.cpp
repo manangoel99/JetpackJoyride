@@ -93,8 +93,6 @@ void draw() {
 
     for (int i = 0; i < coin_arr.size(); i++) {
         coin_arr[i].draw(VP);
-        //coin_arr[i].box.x = coin_arr[i].position.x - init_pos;
-        //coin_arr[i].box.y = coin_arr[i].position.y;
     }
 
     for (vector<FireBeam>::iterator it = fire_list.begin(); it != fire_list.end(); it++) {
@@ -147,6 +145,53 @@ void tick_input(GLFWwindow *window) {
     }
 }
 
+bool detect_firebeam_collision(FireLine fire) {
+    float interim_x = (fire).position.x;
+    float interim_y = (fire).position.y + 0.1;
+
+    float ball_interim_x = ball1.position.x;
+    float ball_interim_y = ball1.position.y + 0.5;
+
+    float tangent = tan((fire).angle);
+
+    float val1 = (ball_interim_x * tangent) - ball_interim_y - (interim_x * tangent) + interim_y;
+
+    float interim_x_1 = (fire).position.x;
+    float interim_y_1 = (fire).position.y - 0.1;
+
+    float ball_interim_x_1 = ball1.position.x;
+    float ball_interim_y_1 = ball1.position.y + 0.5;
+
+    float val2 = (ball_interim_x_1 * tangent) - ball_interim_y_1 - (interim_x_1 * tangent) + interim_y_1;
+
+    ////////////////////////////////////////////////
+
+    float interim_x_2 = (fire).position.x;
+    float interim_y_2 = (fire).position.y + 0.1;
+
+    float ball_interim_x_2 = ball1.position.x + 0.5;
+    float ball_interim_y_2 = ball1.position.y;
+
+    tangent = tan((fire).angle);
+
+    float val3 = (ball_interim_x_2 * tangent) - ball_interim_y_2 - (interim_x_2 * tangent) + interim_y_2;
+
+    float interim_x_3 = (fire).position.x;
+    float interim_y_3 = (fire).position.y - 0.1;
+
+    float ball_interim_x_3 = ball1.position.x + 0.5;
+    float ball_interim_y_3 = ball1.position.y;
+
+    float val4 = (ball_interim_x_3 * tangent) - ball_interim_y_3 - (interim_x_3 * tangent) + interim_y_3;
+
+    if ((val1 * val2 < 0 || val3 * val4 < 0) && ball1.position.x > (fire).position.x && ball1.position.x < (fire).final_position.x)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void tick_elements() {
     num_ticks++;
     ball1.tick();
@@ -163,7 +208,6 @@ void tick_elements() {
         }
 
         if (detect_collision(ball1.box, coin_arr[i].box)) {
-            //cout << i << '\t' << "YAYA" << endl;
             coin_arr.erase(coin_arr.begin() + i - 1);
             flag = true;
             break;
@@ -198,6 +242,10 @@ void tick_elements() {
             fire_lint_list.erase(it);
             it--;
         }
+        
+        if (detect_firebeam_collision(*it)) {
+            cout << "COLLISION" << endl;
+        }
     }
     
 
@@ -207,7 +255,7 @@ void tick_elements() {
     }
 
     if (num_ticks % 149 == 0) {
-        FireLine fire = FireLine(4, randomFloat(0, 3), M_PI / ((rand() % 8) + 1), rand() % 3 + 1);
+        FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 1), rand() % 2 + 1);
         fire_lint_list.push_back(fire);
 
     }
@@ -224,14 +272,6 @@ void initGL(GLFWwindow *window, int width, int height) {
 
     ball1       = Ball(0, -1, COLOR_RED);
     ground      = Ground(0, 0, COLOR_GREEN);
-//    fire        = FireLine(2, 2, M_PI / 3, 2);
-    //fire        = FireBeam(2, 2, randomFloat(0, 1));
-    //coin        = Coin(0, 3, COLOR_RED);
-
-    //for (int i = 0; i < 30; i++) {
-    //    Coin coin = Coin(rand() % 100, rand() % 4, COLOR_BLACK);
-    //    coin_arr.push_back(coin);
-    //}
 
     while (num_coins != 5) {
         Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);
