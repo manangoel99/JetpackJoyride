@@ -33,6 +33,7 @@ FireBeam::FireBeam(float x, float y, float length) {
 
     this->box.x = this->position.x;
     this->box.y = this->position.y;
+    this->length = length;
 
     this->object = create3DObject(GL_TRIANGLES, 6 * 3, vertex_buffer_data, COLOR_ORANGE, GL_FILL);
 }
@@ -60,6 +61,8 @@ void FireBeam::tick() {
         }
     }
 
+
+
     else if (this->direction == "down")
     {
         this->position.y -= this->speed_y;
@@ -68,6 +71,7 @@ void FireBeam::tick() {
         }
         
     }
+    this->box.y = this->position.y;
 
 
 

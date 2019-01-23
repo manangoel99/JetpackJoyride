@@ -175,6 +175,15 @@ void tick_elements() {
     
     for (vector<FireBeam>::iterator it = fire_list.begin(); it != fire_list.end(); it++) {
         (*it).tick();
+        if ((*it).position.x + (*it).length <= -4) {
+            fire_list.erase(it);
+            it--;
+        }
+
+        if (detect_collision(ball1.box, (*it).box)) {
+            quit(window);
+        }
+
     }
     
 

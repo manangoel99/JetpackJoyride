@@ -15,6 +15,7 @@ class FireBeam {
         float speed_x;
         float speed_y;
         float rotation;
+        float length;
         std::string direction;
     private:
         VAO *object;
