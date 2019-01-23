@@ -193,6 +193,7 @@ bool detect_firebeam_collision(FireLine fire) {
 }
 
 void tick_elements() {
+    cout << ball1.life << endl;
     num_ticks++;
     ball1.tick();
     init_pos += 0.075;
@@ -230,7 +231,12 @@ void tick_elements() {
         }
 
         if (detect_collision(ball1.box, (*it).box)) {
-            quit(window);
+            fire_list.erase(it);
+            it--;
+            ball1.life --;
+            if (ball1.life == 0) {
+                quit(window);
+            }
         }
 
     }
@@ -244,6 +250,12 @@ void tick_elements() {
         }
         
         if (detect_firebeam_collision(*it)) {
+            fire_lint_list.erase(it);
+            it--;
+            ball1.life--;
+            if (ball1.life == 0) {
+                quit(window);
+            }
             cout << "COLLISION" << endl;
         }
     }

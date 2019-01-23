@@ -13,6 +13,7 @@ public:
     void draw(glm::mat4 VP);
     void set_position(float x, float y);
     void tick();
+    int life;
     double speed;
     bounding_box_t box;
 private:
