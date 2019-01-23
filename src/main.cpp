@@ -6,6 +6,7 @@
 #include "coins.h"
 #include "enemy.h"
 #include <bits/stdc++.h>
+#include "balloon.h"
 #define ll long long
 
 using namespace std;
@@ -22,6 +23,7 @@ Ball ball1;
 Ground ground;
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
+vector <Balloon> balloon_list;
 float init_pos = 0;
 
 ll num_ticks = 0;
@@ -103,6 +105,10 @@ void draw() {
         (*it).draw(VP);
     }
 
+    for (vector <Balloon>::iterator it = balloon_list.begin(); it != balloon_list.end(); it++) {
+        (*it).draw(VP);
+    }
+
 
 }
 
@@ -116,6 +122,7 @@ void tick_input(GLFWwindow *window) {
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
     int up = glfwGetKey(window, GLFW_KEY_UP);
     int down = glfwGetKey(window, GLFW_KEY_DOWN);
+    int f = glfwGetKey(window, GLFW_KEY_F);
 
     if (!up && jump_status == true) {
         if (ball1.position.y - speed <= -1.025) {
@@ -143,9 +150,14 @@ void tick_input(GLFWwindow *window) {
         jump_status = true;
         jump(&ball1);
     }
+
+    if (f) {
+        Balloon balloon = Balloon(ball1.position.x, ball1.position.y);
+        balloon_list.push_back(balloon);
+    }
 }
 
-bool detect_firebeam_collision(FireLine fire) {
+bool detect_firebeam_collision(Ball ball1, FireLine fire) {
     float interim_x = (fire).position.x;
     float interim_y = (fire).position.y + 0.1;
 
@@ -185,6 +197,54 @@ bool detect_firebeam_collision(FireLine fire) {
     float val4 = (ball_interim_x_3 * tangent) - ball_interim_y_3 - (interim_x_3 * tangent) + interim_y_3;
 
     if ((val1 * val2 < 0 || val3 * val4 < 0) && ball1.position.x > (fire).position.x && ball1.position.x < (fire).final_position.x)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+bool detect_firebeam_balloon_collision(Balloon balloon, FireLine fire) {
+    float interim_x = (fire).position.x;
+    float interim_y = (fire).position.y + 0.1;
+
+    float ball_interim_x = balloon.position.x;
+    float ball_interim_y = balloon.position.y + 0.25;
+
+    float tangent = tan((fire).angle);
+
+    float val1 = (ball_interim_x * tangent) - ball_interim_y - (interim_x * tangent) + interim_y;
+
+    float interim_x_1 = (fire).position.x;
+    float interim_y_1 = (fire).position.y - 0.1;
+
+    float ball_interim_x_1 = balloon.position.x;
+    float ball_interim_y_1 = balloon.position.y + 0.25;
+
+    float val2 = (ball_interim_x_1 * tangent) - ball_interim_y_1 - (interim_x_1 * tangent) + interim_y_1;
+
+    ////////////////////////////////////////////////
+
+    float interim_x_2 = (fire).position.x;
+    float interim_y_2 = (fire).position.y + 0.1;
+
+    float ball_interim_x_2 = balloon.position.x + 0.25;
+    float ball_interim_y_2 = balloon.position.y;
+
+    tangent = tan((fire).angle);
+
+    float val3 = (ball_interim_x_2 * tangent) - ball_interim_y_2 - (interim_x_2 * tangent) + interim_y_2;
+
+    float interim_x_3 = (fire).position.x;
+    float interim_y_3 = (fire).position.y - 0.1;
+
+    float ball_interim_x_3 = balloon.position.x + 0.25;
+    float ball_interim_y_3 = balloon.position.y;
+
+    float val4 = (ball_interim_x_3 * tangent) - ball_interim_y_3 - (interim_x_3 * tangent) + interim_y_3;
+
+    if ((val1 * val2 < 0 || val3 * val4 < 0) && balloon.position.x > (fire).position.x && balloon.position.x < (fire).final_position.x)
     {
         return true;
     }
@@ -249,7 +309,7 @@ void tick_elements() {
             it--;
         }
         
-        if (detect_firebeam_collision(*it)) {
+        if (detect_firebeam_collision(ball1, *it)) {
             fire_lint_list.erase(it);
             it--;
             ball1.life--;
@@ -258,6 +318,26 @@ void tick_elements() {
             }
             cout << "COLLISION" << endl;
         }
+    }
+
+    for (vector<Balloon>::iterator it = balloon_list.begin(); it != balloon_list.end(); it++) {
+        (*it).tick();
+        for (vector<FireBeam>::iterator itr = fire_list.begin(); itr != fire_list.end(); itr++) {
+            if (detect_collision((*it).box, (*itr).box)) {
+                fire_list.erase(itr);
+                itr--;
+                break;
+            }
+        }
+
+        for (vector<FireLine>::iterator itr = fire_lint_list.begin(); itr != fire_lint_list.end(); itr++) {
+            if (detect_firebeam_balloon_collision(*it, *itr)) {
+                fire_lint_list.erase(itr);
+                itr--;
+                break;
+            }
+        }
+
     }
     
 
