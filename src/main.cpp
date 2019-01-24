@@ -22,6 +22,7 @@ GLFWwindow *window;
 
 Ball ball1;
 Ground ground;
+JetPack jet;
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
@@ -99,6 +100,7 @@ void draw() {
     // Scene render
     ball1.draw(VP);
     ground.draw(VP);
+    jet.draw(VP);
 
     for (int i = 0; i < coin_arr.size(); i++) {
         coin_arr[i].draw(VP);
@@ -163,6 +165,12 @@ void tick_input(GLFWwindow *window) {
     if (up) {
         jump_status = true;
         jump(&ball1);
+        jet.set_position(ball1.position.x, ball1.position.y);
+        jet.propel();
+    }
+
+    if(!up) {
+        jet.stop_propel();
     }
 
     if (f) {
@@ -271,8 +279,8 @@ void tick_elements() {
     num_ticks++;
 
     cout << score << endl;
-
     ball1.tick();
+    jet.set_position(ball1.position.x, ball1.position.y);
     
     init_pos += 0.075;
     
@@ -398,12 +406,12 @@ void tick_elements() {
     
 
     if (num_ticks % 293 == 0) {
-        FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4);
+        FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4 + 1);
         fire_list.push_back(fire);
     }
 
     if (num_ticks % 149 == 0) {
-        FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 1), rand() % 2 + 1);
+        FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 3), rand() % 2 + 1);
         fire_lint_list.push_back(fire);
 
     }
@@ -430,6 +438,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
     ball1       = Ball(0, -1, COLOR_RED);
     ground      = Ground(0, 0, COLOR_GREEN);
+    jet         = JetPack(0, -1);
 
     while (num_coins != 5) {
         Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);
