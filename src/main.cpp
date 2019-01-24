@@ -313,6 +313,20 @@ bool detect_firebeam_balloon_collision(Balloon balloon, FireBeam fire) {
     return false;
 }
 
+bool detect_coin_collision(Coin coin) {
+    if (coin.position.x > ball1.position.x && coin.position.x < ball1.position.x + 0.5) {
+        if (coin.position.y > ball1.position.y && coin.position.y < ball1.position.y + 0.5) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+}
+
 void tick_elements() {
     //cout << ball1.life << endl;
     num_ticks++;
@@ -327,23 +341,44 @@ void tick_elements() {
     
     bool flag = false;
     
-    for (int i = 0; i < coin_arr.size(); i++) {
-        coin_arr[i].position.x -= 0.075;
-        coin_arr[i].box.x = coin_arr[i].position.x;
-        if (coin_arr[i].position.x <= -40) {
-            coin_arr.erase(coin_arr.begin() + i - 1);
+    //for (int i = 0; i < coin_arr.size(); i++) {
+    //    coin_arr[i].position.x -= 0.075;
+    //    coin_arr[i].box.x = coin_arr[i].position.x;
+    //    if (coin_arr[i].position.x <= -40) {
+    //        coin_arr.erase(coin_arr.begin() + i - 1);
+    //        flag = true;
+    //        break;
+    //    }
+//
+    //    if (detect_coin_collision(coin_arr[i])) {
+    //        coin_arr.erase(coin_arr.begin() + i - 1);
+    //        flag = true;
+    //        score += 1;
+    //        break;
+    //    }
+//
+    //}
+
+    for (vector <Coin>::iterator it = coin_arr.begin(); it != coin_arr.end(); it++) {
+        it->tick();
+
+        if (it->position.x <= -30) {
+            coin_arr.erase(it);
+            it--;
             flag = true;
             break;
         }
 
-        if (detect_collision(ball1.box, coin_arr[i].box)) {
-            coin_arr.erase(coin_arr.begin() + i - 1);
+        else if (detect_coin_collision(*it)) {
+            coin_arr.erase(it);
+            it--;
             flag = true;
             score += 1;
             break;
         }
 
     }
+
     if (flag == true) {
 
         Coin coin = Coin(20 - randomFloat(0, 0.5), randomFloat(0, 3.5), COLOR_BLACK);
