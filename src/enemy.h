@@ -37,5 +37,20 @@ class FireLine {
         VAO *object;
 };
 
+class Boomerang {
+    public:
+        Boomerang(float x, float y);
+        glm::vec3 position;
+        float speed_x;
+        float speed_y;
+        float acc_x;
+        void draw(glm::mat4 VP);
+        float rotation;
+        void tick();
+
+    private:
+        VAO *object;
+};
+
 
 #endif // !ENEMY_H

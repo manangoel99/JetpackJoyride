@@ -23,11 +23,14 @@ GLFWwindow *window;
 Ball ball1;
 Ground ground;
 JetPack jet;
+
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
 vector <SpeedUp> speed_list;
 vector <CoinBoost> coin_boost_list;
+vector <Boomerang> boomerang_list;
+
 ll score = 0;
 
 float init_pos = 0;
@@ -124,6 +127,10 @@ void draw() {
 
     for (vector <CoinBoost>::iterator it = coin_boost_list.begin(); it != coin_boost_list.end(); it++) {
         (*it).draw(VP);
+    }
+
+    for (vector <Boomerang>::iterator it = boomerang_list.begin(); it != boomerang_list.end(); it++) {
+        it->draw(VP);
     }
 
 }
@@ -310,7 +317,7 @@ void tick_elements() {
     //cout << ball1.life << endl;
     num_ticks++;
 
-    cout << score << endl;
+    //cout << score << endl;
     ball1.tick();
     jet.set_position(ball1.position.x, ball1.position.y);
     
@@ -388,13 +395,15 @@ void tick_elements() {
         if ((*it).position.y <= -1) {
             balloon_list.erase(it);
             it--;
-            continue;
+            break;
         }
 
         for (vector<FireBeam>::iterator itr = fire_list.begin(); itr != fire_list.end(); itr++) {
             if (detect_firebeam_balloon_collision((*it), (*itr))) {
                 fire_list.erase(itr);
                 itr--;
+                balloon_list.erase(it);
+                it--;
                 score += 5;
                 break;
             }
@@ -404,6 +413,8 @@ void tick_elements() {
             if (detect_fireline_balloon_collision(*it, *itr)) {
                 fire_lint_list.erase(itr);
                 itr--;
+                balloon_list.erase(it);
+                it--;
                 score += 5;
                 break;
             }
@@ -443,6 +454,9 @@ void tick_elements() {
         }
     }
     
+    for (vector <Boomerang>::iterator it = boomerang_list.begin(); it != boomerang_list.end(); it++) {
+        it->tick();
+    }
 
     if (num_ticks % 193 == 0) {
         FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4 + 1);
@@ -463,6 +477,11 @@ void tick_elements() {
     if (num_ticks % 359 == 0) {
         CoinBoost booster = CoinBoost(4, rand() % 3 + 1);
         coin_boost_list.push_back(booster);
+    }
+
+    if (num_ticks % 299 == 0) {
+        Boomerang boom = Boomerang(6, randomFloat(2.5, 3.8));
+        boomerang_list.push_back(boom);
     }
 
 }
