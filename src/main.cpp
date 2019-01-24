@@ -247,7 +247,6 @@ bool detect_fireline_collision(Ball ball1, FireLine fire) {
     return false;
 }
 
-
 bool detect_fireline_balloon_collision(Balloon balloon, FireLine fire) {
     float interim_x = (fire).position.x;
     float interim_y = (fire).position.y + 0.1;
@@ -327,6 +326,45 @@ bool detect_coin_collision(Coin coin) {
     }
 }
 
+bool in_ball(Ball ball, pair <float, float> point) {
+    if (point.first > ball.position.x && point.first < ball.position.x + 0.5) {
+        if (point.second > ball.position.y && point.second < ball.position.y + 0.5) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+}
+
+bool detect_boomerang_collision(Boomerang boomerang) {
+    pair <float, float> p1, p2, p3, p4;
+    
+    p1.first = boomerang.position.x - 0.125;
+    p1.second = boomerang.position.y;
+
+    p2.first = boomerang.position.x - 0.125;
+    p2.second = boomerang.position.y + 0.1875;
+
+    p3.first = boomerang.position.x + 0.125;
+    p3.second = boomerang.position.y;
+
+    p4.first = boomerang.position.x + 0.125;
+    p4.second = boomerang.position.y + 0.1875;
+
+
+    if (in_ball(ball1, p1) || in_ball(ball1, p2) || in_ball(ball1, p3) || in_ball(ball1, p4)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
+
 void tick_elements() {
     //cout << ball1.life << endl;
     num_ticks++;
@@ -340,24 +378,6 @@ void tick_elements() {
     camera_rotation_angle += 0;
     
     bool flag = false;
-    
-    //for (int i = 0; i < coin_arr.size(); i++) {
-    //    coin_arr[i].position.x -= 0.075;
-    //    coin_arr[i].box.x = coin_arr[i].position.x;
-    //    if (coin_arr[i].position.x <= -40) {
-    //        coin_arr.erase(coin_arr.begin() + i - 1);
-    //        flag = true;
-    //        break;
-    //    }
-//
-    //    if (detect_coin_collision(coin_arr[i])) {
-    //        coin_arr.erase(coin_arr.begin() + i - 1);
-    //        flag = true;
-    //        score += 1;
-    //        break;
-    //    }
-//
-    //}
 
     for (vector <Coin>::iterator it = coin_arr.begin(); it != coin_arr.end(); it++) {
         it->tick();
@@ -491,6 +511,10 @@ void tick_elements() {
     
     for (vector <Boomerang>::iterator it = boomerang_list.begin(); it != boomerang_list.end(); it++) {
         it->tick();
+        if (detect_boomerang_collision(*it)) {
+            cout << "COLLISION BOOM" << endl;
+            ball1.life--;
+        }
     }
 
     if (num_ticks % 193 == 0) {
