@@ -193,7 +193,7 @@ void tick_input(GLFWwindow *window) {
     }
 }
 
-bool detect_firebeam_collision(Ball ball1, FireLine fire) {
+bool detect_fireline_collision(Ball ball1, FireLine fire) {
     float interim_x = (fire).position.x;
     float interim_y = (fire).position.y + 0.1;
 
@@ -241,7 +241,7 @@ bool detect_firebeam_collision(Ball ball1, FireLine fire) {
 }
 
 
-bool detect_firebeam_balloon_collision(Balloon balloon, FireLine fire) {
+bool detect_fireline_balloon_collision(Balloon balloon, FireLine fire) {
     float interim_x = (fire).position.x;
     float interim_y = (fire).position.y + 0.1;
 
@@ -285,6 +285,24 @@ bool detect_firebeam_balloon_collision(Balloon balloon, FireLine fire) {
         return true;
     }
 
+    return false;
+}
+
+bool detect_firebeam_collision(FireBeam fire) {
+    if (ball1.position.x + 0.5 > fire.position.x && ball1.position.x < fire.position.x + fire.length) {
+        if (ball1.position.y < fire.position.y && ball1.position.y + 0.5 > fire.position.y + 0.3) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool detect_firebeam_balloon_collision(Balloon balloon, FireBeam fire) {
+    if (balloon.position.x + 0.125 > fire.position.x && ball1.position.x < fire.position.x + fire.length) {
+        if (balloon.position.y < fire.position.y + 0.3 && balloon.position.y > fire.position.y) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -334,7 +352,7 @@ void tick_elements() {
             it--;
         }
 
-        if (detect_collision(ball1.box, (*it).box)) {
+        if (detect_firebeam_collision((*it))) {
             fire_list.erase(it);
             it--;
             ball1.life --;
@@ -353,7 +371,7 @@ void tick_elements() {
             it--;
         }
         
-        if (detect_firebeam_collision(ball1, *it)) {
+        if (detect_fireline_collision(ball1, *it)) {
             fire_lint_list.erase(it);
             it--;
             ball1.life--;
@@ -366,8 +384,15 @@ void tick_elements() {
 
     for (vector<Balloon>::iterator it = balloon_list.begin(); it != balloon_list.end(); it++) {
         (*it).tick();
+
+        if ((*it).position.y <= -1) {
+            balloon_list.erase(it);
+            it--;
+            continue;
+        }
+
         for (vector<FireBeam>::iterator itr = fire_list.begin(); itr != fire_list.end(); itr++) {
-            if (detect_collision((*it).box, (*itr).box)) {
+            if (detect_firebeam_balloon_collision((*it), (*itr))) {
                 fire_list.erase(itr);
                 itr--;
                 score += 5;
@@ -376,7 +401,7 @@ void tick_elements() {
         }
 
         for (vector<FireLine>::iterator itr = fire_lint_list.begin(); itr != fire_lint_list.end(); itr++) {
-            if (detect_firebeam_balloon_collision(*it, *itr)) {
+            if (detect_fireline_balloon_collision(*it, *itr)) {
                 fire_lint_list.erase(itr);
                 itr--;
                 score += 5;
@@ -419,24 +444,24 @@ void tick_elements() {
     }
     
 
-    if (num_ticks % 293 == 0) {
-        FireBeam fire = FireBeam(40, randomFloat(-1, 2), rand() % 4 + 1);
+    if (num_ticks % 193 == 0) {
+        FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4 + 1);
         fire_list.push_back(fire);
     }
 
     if (num_ticks % 149 == 0) {
-        FireLine fire = FireLine(40, randomFloat(0, 2), M_PI / ((rand() % 8) + 3), rand() % 2 + 1);
+        FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 3), rand() % 2 + 1);
         fire_lint_list.push_back(fire);
 
     }
 
     if (num_ticks % 257 == 0) {
-        SpeedUp speed = SpeedUp(40, rand() % 3 + 1);
+        SpeedUp speed = SpeedUp(4, rand() % 3 + 1);
         speed_list.push_back(speed);
     }
 
     if (num_ticks % 359 == 0) {
-        CoinBoost booster = CoinBoost(40, rand() % 3 + 1);
+        CoinBoost booster = CoinBoost(4, rand() % 3 + 1);
         coin_boost_list.push_back(booster);
     }
 
