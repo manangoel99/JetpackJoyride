@@ -133,12 +133,26 @@ void jump(Ball *ball) {
         (*ball).position.y += 0.075;
 }
 
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    cout << xoffset << "\t" << yoffset << endl;
+    if (yoffset == 1) {
+        screen_zoom += 0.1;
+    }
+    else if (yoffset == -1) {
+        if (screen_zoom != 0.1)
+            screen_zoom -= 0.1;
+    }
+    reset_screen();
+}
+
 void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
     int up = glfwGetKey(window, GLFW_KEY_UP);
     int down = glfwGetKey(window, GLFW_KEY_DOWN);
     int f = glfwGetKey(window, GLFW_KEY_F);
+
+    glfwSetScrollCallback(window, scroll_callback);
 
     if (!up && jump_status == true) {
         if (ball1.position.y - speed <= -1.025) {
@@ -291,7 +305,7 @@ void tick_elements() {
     for (int i = 0; i < coin_arr.size(); i++) {
         coin_arr[i].position.x -= 0.075;
         coin_arr[i].box.x = coin_arr[i].position.x;
-        if (coin_arr[i].position.x <= -4) {
+        if (coin_arr[i].position.x <= -40) {
             coin_arr.erase(coin_arr.begin() + i - 1);
             flag = true;
             break;
@@ -307,7 +321,7 @@ void tick_elements() {
     }
     if (flag == true) {
 
-        Coin coin = Coin(4 - randomFloat(0, 0.5), randomFloat(0, 4), COLOR_BLACK);
+        Coin coin = Coin(20 - randomFloat(0, 0.5), randomFloat(0, 3.5), COLOR_BLACK);
 
         coin_arr.push_back(coin);
     }
@@ -315,7 +329,7 @@ void tick_elements() {
     
     for (vector<FireBeam>::iterator it = fire_list.begin(); it != fire_list.end(); it++) {
         (*it).tick();
-        if ((*it).position.x + (*it).length <= -4) {
+        if ((*it).position.x + (*it).length <= -40) {
             fire_list.erase(it);
             it--;
         }
@@ -334,7 +348,7 @@ void tick_elements() {
     for(vector<FireLine>::iterator it = fire_lint_list.begin(); it != fire_lint_list.end(); it++) {
         (*it).tick();
 
-        if ((*it).position.x + (*it).length * cos((*it).angle) <= -4) {
+        if ((*it).position.x + (*it).length * cos((*it).angle) <= -40) {
             fire_lint_list.erase(it);
             it--;
         }
@@ -406,23 +420,23 @@ void tick_elements() {
     
 
     if (num_ticks % 293 == 0) {
-        FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4 + 1);
+        FireBeam fire = FireBeam(40, randomFloat(-1, 2), rand() % 4 + 1);
         fire_list.push_back(fire);
     }
 
     if (num_ticks % 149 == 0) {
-        FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 3), rand() % 2 + 1);
+        FireLine fire = FireLine(40, randomFloat(0, 2), M_PI / ((rand() % 8) + 3), rand() % 2 + 1);
         fire_lint_list.push_back(fire);
 
     }
 
     if (num_ticks % 257 == 0) {
-        SpeedUp speed = SpeedUp(4, rand() % 3 + 1);
+        SpeedUp speed = SpeedUp(40, rand() % 3 + 1);
         speed_list.push_back(speed);
     }
 
     if (num_ticks % 359 == 0) {
-        CoinBoost booster = CoinBoost(4, rand() % 3 + 1);
+        CoinBoost booster = CoinBoost(40, rand() % 3 + 1);
         coin_boost_list.push_back(booster);
     }
 
@@ -440,7 +454,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     ground      = Ground(0, 0, COLOR_GREEN);
     jet         = JetPack(0, -1);
 
-    while (num_coins != 5) {
+    while (num_coins != 15) {
         Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);
         coin_arr.push_back(coin);
         num_coins++;
