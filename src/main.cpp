@@ -7,6 +7,7 @@
 #include "enemy.h"
 #include <bits/stdc++.h>
 #include "balloon.h"
+#include "segdisp.h"
 #include "projectiles.h"
 #define ll long long
 
@@ -24,6 +25,7 @@ Ball ball1;
 Ground ground;
 JetPack jet;
 
+vector <Segment> segments;
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
@@ -138,6 +140,11 @@ void draw() {
     for (vector <Magnet>::iterator it = magnet_list.begin(); it != magnet_list.end(); it++) {
         it->draw(VP);
     }
+
+    for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
+        it->draw(VP);
+        //cout << it->position.x << endl;
+    }
 }
 
 void jump(Ball *ball) {
@@ -204,6 +211,60 @@ void tick_input(GLFWwindow *window) {
         balloon_list.push_back(balloon);
     }
 }
+
+void WriteScore(int hund, int ten, int one) {
+    int num[] = {
+        hund, ten, one,
+    };
+
+    for (int i = 0; i < 3; i++) {
+
+        if (num[i] != 0) {
+
+            if (num[i] != 1 && num[i] != 4 && num[i] != 7) {//Bottom        
+                segments[7 * i].TurnBlue();                 //Bottom
+            }                                               //Bottom
+
+            if (num[i] == 2 || num[i] == 6 || num[i] == 8) {        //Left Down
+                segments[7 * i + 1].TurnBlue();     //Left Down
+            }       //Left Down
+
+            if (num[i] != 1 && num[i] != 2 && num[i] != 3 && num[i] != 7) {         //Left Up
+                segments[7 * i + 2].TurnBlue();         //Left Up
+            }           //Left Up
+
+            if (num[i] != 7 && num[i] != 1) {           //Middle
+                segments[7 * i + 3].TurnBlue();         //Middle
+            }           //Middle
+
+            if (num[i] != 1 && num[i] != 4) {           //Top
+                segments[7 * i + 4].TurnBlue();         //Top
+            }           //Top
+
+            if (num[i] != 2) {              //Right Down
+                segments[7 * i + 5].TurnBlue();             //Right Down
+            }               //Right Down
+
+            if (num[i] != 5 && num[i] != 6) {       //Right Up
+                segments[7 * i + 6].TurnBlue();     //Right Up
+            }       //Right Up
+
+        }
+        else {
+            for (int j = 0; j < 7; j++) {
+                segments[7 * i + j].TurnBlue();
+            }
+
+            segments[7 * i + 3].TurnWhite();
+
+        }
+
+
+
+    }
+
+}
+
 
 bool detect_fireline_collision(Ball ball1, FireLine fire) {
     float interim_x = (fire).position.x;
@@ -377,6 +438,12 @@ void tick_elements() {
     //cout << score << endl;
     ball1.tick();
 
+    for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
+        it->TurnWhite();
+    }
+
+    WriteScore(score/100, (score%100)/10, score % 10);
+
     jet.set_position(ball1.position.x, ball1.position.y);
     
     init_pos += 0.075;
@@ -549,6 +616,8 @@ void tick_elements() {
             
         }
 
+        jump_status = true;
+
         float x_vec = it->position.x - ball1.position.x;
         float y_vec = it->position.y - ball1.position.y;
 
@@ -592,6 +661,7 @@ void tick_elements() {
 
 }
 
+
 int num_coins = 0;
 
 /* Initialize the OpenGL rendering properties */
@@ -603,6 +673,54 @@ void initGL(GLFWwindow *window, int width, int height) {
     ball1       = Ball(0, -1, COLOR_RED);
     ground      = Ground(0, 0, COLOR_GREEN);
     jet         = JetPack(0, -1);
+
+    Segment hundred_seg1 = Segment(-3.9, 3.6, 0);          //Bottom
+    Segment hundred_seg2 = Segment(-3.9, 3.65, 90);    //Left Down
+    Segment hundred_seg3 = Segment(-3.9, 3.8, 90);    //Left Up
+    Segment hundred_seg4 = Segment(-3.9, 3.75, 0);        //Middle
+    Segment hundred_seg5 = Segment(-3.9, 3.9, 0);        //Top
+    Segment hundred_seg6 = Segment(-3.75, 3.65, 90);   //Right Down
+    Segment hundred_seg7 = Segment(-3.75, 3.8, 90);   //Right Up
+
+    segments.push_back(hundred_seg1);
+    segments.push_back(hundred_seg2);
+    segments.push_back(hundred_seg3);
+    segments.push_back(hundred_seg4);
+    segments.push_back(hundred_seg5);
+    segments.push_back(hundred_seg6);
+    segments.push_back(hundred_seg7);
+
+    Segment tens_seg1 = Segment(-3.6, 3.6, 0);    //Bottom
+    Segment tens_seg2 = Segment(-3.6, 3.65, 90);  //Left Down
+    Segment tens_seg3 = Segment(-3.6, 3.8, 90);   //Left Up
+    Segment tens_seg4 = Segment(-3.6, 3.75, 0);   //Middle
+    Segment tens_seg5 = Segment(-3.6, 3.9, 0);    //Top
+    Segment tens_seg6 = Segment(-3.45, 3.65, 90); //Right Down
+    Segment tens_seg7 = Segment(-3.45, 3.8, 90);  //Right Up
+
+    segments.push_back(tens_seg1);
+    segments.push_back(tens_seg2);
+    segments.push_back(tens_seg3);
+    segments.push_back(tens_seg4);
+    segments.push_back(tens_seg5);
+    segments.push_back(tens_seg6);
+    segments.push_back(tens_seg7);
+
+    Segment oness_seg1 = Segment(-3.3, 3.6, 0);    //Bottom
+    Segment oness_seg2 = Segment(-3.3, 3.65, 90);  //Left Down
+    Segment oness_seg3 = Segment(-3.3, 3.8, 90);   //Left Up
+    Segment oness_seg4 = Segment(-3.3, 3.75, 0);   //Middle
+    Segment oness_seg5 = Segment(-3.3, 3.9, 0);    //Top
+    Segment oness_seg6 = Segment(-3.15, 3.65, 90); //Right Down
+    Segment oness_seg7 = Segment(-3.15, 3.8, 90);  //Right Up
+
+    segments.push_back(oness_seg1);
+    segments.push_back(oness_seg2);
+    segments.push_back(oness_seg3);
+    segments.push_back(oness_seg4);
+    segments.push_back(oness_seg5);
+    segments.push_back(oness_seg6);
+    segments.push_back(oness_seg7);
 
     while (num_coins != 15) {
         Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);
