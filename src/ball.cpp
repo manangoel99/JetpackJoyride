@@ -6,6 +6,8 @@ Ball::Ball(float x, float y, color_t color) {
     this->rotation = 0;
     speed = 1;
     this->life = 3;
+    this->speed_x = 0;
+    this->speed_y = 0;
 
     static const GLfloat vertex_buffer_data[] = {
         0.0f, 0.0f, 0.0f,
@@ -39,8 +41,8 @@ void Ball::set_position(float x, float y) {
 void Ball::tick() {
     this->rotation += 0;
     // this->rotation += speed;
-    // this->position.x -= speed;
-    // this->position.y -= speed;
+    this->position.x += speed_x;
+    this->position.y += speed_y;
     this->box.x = this->position.x;
     this->box.y = this->position.y;
 }

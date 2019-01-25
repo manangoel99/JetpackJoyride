@@ -30,6 +30,7 @@ vector <Balloon> balloon_list;
 vector <SpeedUp> speed_list;
 vector <CoinBoost> coin_boost_list;
 vector <Boomerang> boomerang_list;
+vector <Magnet> magnet_list;
 
 ll score = 0;
 
@@ -133,6 +134,10 @@ void draw() {
         it->draw(VP);
     }
 
+
+    for (vector <Magnet>::iterator it = magnet_list.begin(); it != magnet_list.end(); it++) {
+        it->draw(VP);
+    }
 }
 
 void jump(Ball *ball) {
@@ -524,7 +529,35 @@ void tick_elements() {
             break;
 
         }
+
+        if (it->position.x >= 20) {
+            boomerang_list.erase(it);
+            it--;
+            break;
+        }
     }
+
+    for (vector <Magnet>::iterator it = magnet_list.begin(); it != magnet_list.end(); it++) {
+        it->tick();
+        if(it->num_ticks >= 269) {
+            magnet_list.erase(it);
+            it--;
+            ball1.speed_x = 0;
+            ball1.speed_y = 0;
+            break;
+            
+            
+        }
+
+        float x_vec = it->position.x - ball1.position.x;
+        float y_vec = it->position.y - ball1.position.y;
+
+        float dist = sqrt(x_vec * x_vec + y_vec * y_vec);
+
+        ball1.speed_x += 0.0001 * (x_vec / dist);
+        ball1.speed_y += 0.0001 * (y_vec / dist);
+    }
+
 
     if (num_ticks % 193 == 0) {
         FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4 + 1);
@@ -550,6 +583,11 @@ void tick_elements() {
     if (num_ticks % 299 == 0) {
         Boomerang boom = Boomerang(6, randomFloat(2.5, 3.8));
         boomerang_list.push_back(boom);
+    }
+
+    if (num_ticks % 517 == 0) {
+        Magnet mag = Magnet(4, randomFloat(0, 3));
+        magnet_list.push_back(mag);
     }
 
 }

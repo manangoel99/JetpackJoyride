@@ -16,6 +16,8 @@ class Ball {
         void propulsion();
         int life;
         double speed;
+        float speed_x;
+        float speed_y;
         bounding_box_t box;
     private:
         VAO *object;
