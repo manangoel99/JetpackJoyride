@@ -26,6 +26,7 @@ Ground ground;
 JetPack jet;
 
 vector <Segment> segments;
+vector <Segment> life_segments;
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
@@ -69,6 +70,51 @@ void move_horizontal(Ball *ball, char direction) {
     else if (direction == 'r') {
         (*ball).position.x += (0.05 + speed_x);
     }
+
+}
+
+void WriteLife(int lives) {
+
+    int i = 0;
+    if (lives != 0) {
+
+            if (lives != 1 && lives != 4 && lives != 7) {//Bottom        
+                life_segments[7 * i].TurnBlue();                 //Bottom
+            }                                               //Bottom
+
+            if (lives == 2 || lives == 6 || lives == 8) {        //Left Down
+                life_segments[7 * i + 1].TurnBlue();     //Left Down
+            }       //Left Down
+
+            if (lives != 1 && lives != 2 && lives != 3 && lives != 7) {         //Left Up
+                life_segments[7 * i + 2].TurnBlue();         //Left Up
+            }           //Left Up
+
+            if (lives != 7 && lives != 1) {           //Middle
+                life_segments[7 * i + 3].TurnBlue();         //Middle
+            }           //Middle
+
+            if (lives != 1 && lives != 4) {           //Top
+                life_segments[7 * i + 4].TurnBlue();         //Top
+            }           //Top
+
+            if (lives != 2) {              //Right Down
+                life_segments[7 * i + 5].TurnBlue();             //Right Down
+            }               //Right Down
+
+            if (lives != 5 && lives != 6) {       //Right Up
+                life_segments[7 * i + 6].TurnBlue();     //Right Up
+            }       //Right Up
+
+        }
+        else {
+            for (int j = 0; j < 7; j++) {
+                life_segments[7 * i + j].TurnBlue();
+            }
+
+            life_segments[7 * i + 3].TurnWhite();
+
+        }
 
 }
 
@@ -142,6 +188,11 @@ void draw() {
     }
 
     for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
+        it->draw(VP);
+        //cout << it->position.x << endl;
+    }
+
+    for (vector <Segment>::iterator it = life_segments.begin(); it != life_segments.end(); it++) {
         it->draw(VP);
         //cout << it->position.x << endl;
     }
@@ -441,7 +492,11 @@ void tick_elements() {
     for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
         it->TurnWhite();
     }
+    for (vector <Segment>::iterator it = life_segments.begin(); it != life_segments.end(); it++) {
+        it->TurnWhite();
+    }
 
+    WriteLife(ball1.life);
     WriteScore(score/100, (score%100)/10, score % 10);
 
     jet.set_position(ball1.position.x, ball1.position.y);
@@ -721,6 +776,22 @@ void initGL(GLFWwindow *window, int width, int height) {
     segments.push_back(oness_seg5);
     segments.push_back(oness_seg6);
     segments.push_back(oness_seg7);
+
+    Segment life_seg1 = Segment(-2.9, 3.6, 0);    //Bottom
+    Segment life_seg2 = Segment(-2.9, 3.65, 90);  //Left Down
+    Segment life_seg3 = Segment(-2.9, 3.8, 90);   //Left Up
+    Segment life_seg4 = Segment(-2.9, 3.75, 0);   //Middle
+    Segment life_seg5 = Segment(-2.9, 3.9, 0);    //Top
+    Segment life_seg6 = Segment(-2.75, 3.65, 90); //Right Down
+    Segment life_seg7 = Segment(-2.75, 3.8, 90);  //Right Up
+
+    life_segments.push_back(life_seg1);
+    life_segments.push_back(life_seg2);
+    life_segments.push_back(life_seg3);
+    life_segments.push_back(life_seg4);
+    life_segments.push_back(life_seg5);
+    life_segments.push_back(life_seg6);
+    life_segments.push_back(life_seg7);
 
     while (num_coins != 15) {
         Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);
