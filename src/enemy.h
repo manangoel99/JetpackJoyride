@@ -1,5 +1,7 @@
 #include "main.h"
 #include <bits/stdc++.h>
+#define ll long long
+
 
 #ifndef ENEMY_H
 #define  ENEMY_H
@@ -52,5 +54,20 @@ class Boomerang {
         VAO *object;
 };
 
+
+class Magnet {
+    private:
+        VAO *UObject;
+        VAO *TipLObject;
+        VAO *TipRObject;
+    public:
+        Magnet () {};
+        Magnet(float x, float y);
+        glm::vec3 position;
+        void draw(glm::mat4 VP);
+        float rotation;
+        void tick();
+        long long num_ticks;
+};
 
 #endif // !ENEMY_H

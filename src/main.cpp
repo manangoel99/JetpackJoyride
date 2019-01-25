@@ -371,6 +371,7 @@ void tick_elements() {
 
     //cout << score << endl;
     ball1.tick();
+
     jet.set_position(ball1.position.x, ball1.position.y);
     
     init_pos += 0.075;
@@ -514,6 +515,14 @@ void tick_elements() {
         if (detect_boomerang_collision(*it)) {
             cout << "COLLISION BOOM" << endl;
             ball1.life--;
+            if (ball1.life == 0) {
+                quit(window);
+            }
+
+            boomerang_list.erase(it);
+            it--;
+            break;
+
         }
     }
 
