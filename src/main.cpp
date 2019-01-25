@@ -9,6 +9,7 @@
 #include "balloon.h"
 #include "segdisp.h"
 #include "projectiles.h"
+#include "semicircle.h"
 #define ll long long
 
 using namespace std;
@@ -35,6 +36,7 @@ vector <SpeedUp> speed_list;
 vector <CoinBoost> coin_boost_list;
 vector <Boomerang> boomerang_list;
 vector <Magnet> magnet_list;
+vector <Ring> ring_list;
 
 ll score = 0;
 int stage = 1;
@@ -46,6 +48,8 @@ ll num_ticks = 0;
 vector <Coin> coin_arr;
 bool jump_status = false;
 float speed = 0.05;
+
+bool ring_trap = false;
 
 float speed_x = 0;
 
@@ -245,6 +249,10 @@ void draw() {
     for (vector <Segment>::iterator it = stage_segments.begin(); it != stage_segments.end(); it++) {
         it->draw(VP);
         //cout << it->position.x << endl;
+    }
+
+    for (vector <Ring>::iterator it = ring_list.begin(); it != ring_list.end(); it++) {
+        it->draw(VP);
     }
 }
 
@@ -532,6 +540,23 @@ bool detect_boomerang_collision(Boomerang boomerang) {
 
 }
 
+float compute_distance(pair <float, float> p1, pair <float, float> p2) {
+    return sqrt(((p1.first - p2.first) * (p1.first - p2.first)) + ((p1.second - p2.second) * (p1.second - p2.second)));
+}
+
+bool detect_ring_collision(Ring ring) {
+    float dist1 = compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x, ring.position.y));
+    float dist2 = compute_distance(make_pair(ball1.position.x + 0.5, ball1.position.y), make_pair(ring.position.x, ring.position.y));
+
+    if ((dist1 > ring.radius && dist2 < ring.radius) || dist1 < ring.radius && dist2 > ring.radius) {
+        return true;
+    }
+
+    else {
+        return false;
+    }
+}
+
 void tick_elements() {
     //cout << ball1.life << endl;
     num_ticks++;
@@ -566,6 +591,22 @@ void tick_elements() {
     camera_rotation_angle += 0;
     
     bool flag = false;
+
+    ring_trap = false;
+
+    for (vector <Ring>::iterator it = ring_list.begin(); it != ring_list.end(); it++) {
+        it->tick();
+        if (detect_ring_collision(*it)) {
+            cout << "BOOM" << endl;
+            ring_trap = true;
+        }
+
+        if (it->position.x <= -20) {
+            ring_list.erase(it);
+            it--;
+            break;
+        }
+    }
 
     for (vector <Coin>::iterator it = coin_arr.begin(); it != coin_arr.end(); it++) {
         it->tick();
@@ -604,7 +645,7 @@ void tick_elements() {
             it--;
         }
 
-        if (detect_firebeam_collision((*it))) {
+        if (detect_firebeam_collision((*it)) && ring_trap == false) {
             fire_list.erase(it);
             it--;
             ball1.life --;
@@ -623,11 +664,11 @@ void tick_elements() {
             it--;
         }
 
-        if (it->rotate == true) {
-            cout << it->angle << '\t' << it->rotation << endl;
-        }
+        //if (it->rotate == true) {
+        //    cout << it->angle << '\t' << it->rotation << endl;
+        //}
         
-        if (detect_fireline_collision(ball1, *it)) {
+        if (detect_fireline_collision(ball1, *it) && ring_trap == false) {
             fire_lint_list.erase(it);
             it--;
             ball1.life--;
@@ -705,7 +746,7 @@ void tick_elements() {
     
     for (vector <Boomerang>::iterator it = boomerang_list.begin(); it != boomerang_list.end(); it++) {
         it->tick();
-        if (detect_boomerang_collision(*it)) {
+        if (detect_boomerang_collision(*it) && ring_trap == false) {
             cout << "COLLISION BOOM" << endl;
             ball1.life--;
             if (ball1.life == 0) {
@@ -749,6 +790,7 @@ void tick_elements() {
     }
 
 
+
     if (num_ticks % 193 == 0) {
         FireBeam fire = FireBeam(4, randomFloat(-1, 2), rand() % 4 + 1);
         fire_list.push_back(fire);
@@ -783,10 +825,18 @@ void tick_elements() {
         boomerang_list.push_back(boom);
     }
 
-    if (num_ticks % 517 == 0) {
+    if (num_ticks % 717 == 0) {
         Magnet mag = Magnet(4, randomFloat(0, 3));
         magnet_list.push_back(mag);
     }
+
+    if (num_ticks % 821 == 0) {
+        Ring ring = Ring(4, randomFloat(-1, 3));
+        ring_list.push_back(ring);
+
+    }
+
+
 
 }
 
