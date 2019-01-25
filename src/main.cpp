@@ -27,6 +27,7 @@ JetPack jet;
 
 vector <Segment> segments;
 vector <Segment> life_segments;
+vector <Segment> stage_segments;
 vector <FireBeam> fire_list;
 vector <FireLine> fire_lint_list;
 vector <Balloon> balloon_list;
@@ -36,6 +37,7 @@ vector <Boomerang> boomerang_list;
 vector <Magnet> magnet_list;
 
 ll score = 0;
+int stage = 1;
 
 float init_pos = 0;
 
@@ -118,6 +120,49 @@ void WriteLife(int lives) {
 
 }
 
+void WriteStage(int stage) {
+    int i = 0;
+    if (stage != 0) {
+
+            if (stage != 1 && stage != 4 && stage != 7) {//Bottom        
+                stage_segments[7 * i].TurnBlue();                 //Bottom
+            }                                               //Bottom
+
+            if (stage == 2 || stage == 6 || stage == 8) {        //Left Down
+                stage_segments[7 * i + 1].TurnBlue();     //Left Down
+            }       //Left Down
+
+            if (stage != 1 && stage != 2 && stage != 3 && stage != 7) {         //Left Up
+                stage_segments[7 * i + 2].TurnBlue();         //Left Up
+            }           //Left Up
+
+            if (stage != 7 && stage != 1) {           //Middle
+                stage_segments[7 * i + 3].TurnBlue();         //Middle
+            }           //Middle
+
+            if (stage != 1 && stage != 4) {           //Top
+                stage_segments[7 * i + 4].TurnBlue();         //Top
+            }           //Top
+
+            if (stage != 2) {              //Right Down
+                stage_segments[7 * i + 5].TurnBlue();             //Right Down
+            }               //Right Down
+
+            if (stage != 5 && stage != 6) {       //Right Up
+                stage_segments[7 * i + 6].TurnBlue();     //Right Up
+            }       //Right Up
+
+        }
+        else {
+            for (int j = 0; j < 7; j++) {
+                stage_segments[7 * i + j].TurnBlue();
+            }
+
+            stage_segments[7 * i + 3].TurnWhite();
+
+        }
+    
+}
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -193,6 +238,11 @@ void draw() {
     }
 
     for (vector <Segment>::iterator it = life_segments.begin(); it != life_segments.end(); it++) {
+        it->draw(VP);
+        //cout << it->position.x << endl;
+    }
+
+    for (vector <Segment>::iterator it = stage_segments.begin(); it != stage_segments.end(); it++) {
         it->draw(VP);
         //cout << it->position.x << endl;
     }
@@ -486,6 +536,12 @@ void tick_elements() {
     //cout << ball1.life << endl;
     num_ticks++;
 
+    //cout << num_ticks << endl;
+
+    if (num_ticks % 2400 == 0) {
+        stage += 1;
+    }
+
     //cout << score << endl;
     ball1.tick();
 
@@ -495,9 +551,13 @@ void tick_elements() {
     for (vector <Segment>::iterator it = life_segments.begin(); it != life_segments.end(); it++) {
         it->TurnWhite();
     }
+    for (vector <Segment>::iterator it = stage_segments.begin(); it != stage_segments.end(); it++) {
+        it->TurnWhite();
+    }
 
     WriteLife(ball1.life);
     WriteScore(score/100, (score%100)/10, score % 10);
+    WriteStage(stage);
 
     jet.set_position(ball1.position.x, ball1.position.y);
     
@@ -509,6 +569,7 @@ void tick_elements() {
 
     for (vector <Coin>::iterator it = coin_arr.begin(); it != coin_arr.end(); it++) {
         it->tick();
+        it->speed_x = 0.075 + ((stage - 1) * 0.05);
 
         if (it->position.x <= -30) {
             coin_arr.erase(it);
@@ -537,6 +598,7 @@ void tick_elements() {
     
     for (vector<FireBeam>::iterator it = fire_list.begin(); it != fire_list.end(); it++) {
         (*it).tick();
+        it->speed_x = 0.075 + ((stage - 1) * 0.05);
         if ((*it).position.x + (*it).length <= -40) {
             fire_list.erase(it);
             it--;
@@ -555,10 +617,14 @@ void tick_elements() {
 
     for(vector<FireLine>::iterator it = fire_lint_list.begin(); it != fire_lint_list.end(); it++) {
         (*it).tick();
-
+        it->speed_x = 0.075 + ((stage - 1) * 0.05);
         if ((*it).position.x + (*it).length * cos((*it).angle) <= -40) {
             fire_lint_list.erase(it);
             it--;
+        }
+
+        if (it->rotate == true) {
+            cout << it->angle << '\t' << it->rotation << endl;
         }
         
         if (detect_fireline_collision(ball1, *it)) {
@@ -690,6 +756,14 @@ void tick_elements() {
 
     if (num_ticks % 149 == 0) {
         FireLine fire = FireLine(4, randomFloat(0, 2), M_PI / ((rand() % 8) + 3), rand() % 2 + 1);
+
+        if (stage > 1) {
+            int zz = rand() % 2;
+            if (zz == 1) {
+                fire.rotate = true;
+            }
+        }
+
         fire_lint_list.push_back(fire);
 
     }
@@ -792,6 +866,22 @@ void initGL(GLFWwindow *window, int width, int height) {
     life_segments.push_back(life_seg5);
     life_segments.push_back(life_seg6);
     life_segments.push_back(life_seg7);
+
+    Segment stage_seg1 = Segment(-2.5, 3.6, 0);    //Bottom
+    Segment stage_seg2 = Segment(-2.5, 3.65, 90);  //Left Down
+    Segment stage_seg3 = Segment(-2.5, 3.8, 90);   //Left Up
+    Segment stage_seg4 = Segment(-2.5, 3.75, 0);   //Middle
+    Segment stage_seg5 = Segment(-2.5, 3.9, 0);    //Top
+    Segment stage_seg6 = Segment(-2.35, 3.65, 90); //Right Down
+    Segment stage_seg7 = Segment(-2.35, 3.8, 90);  //Right Up
+
+    stage_segments.push_back(stage_seg1);
+    stage_segments.push_back(stage_seg2);
+    stage_segments.push_back(stage_seg3);
+    stage_segments.push_back(stage_seg4);
+    stage_segments.push_back(stage_seg5);
+    stage_segments.push_back(stage_seg6);
+    stage_segments.push_back(stage_seg7);
 
     while (num_coins != 15) {
         Coin coin = Coin(randomFloat(-4, 4), randomFloat(0, 4), COLOR_BLACK);

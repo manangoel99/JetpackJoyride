@@ -88,6 +88,8 @@ FireLine::FireLine(float x, float y, float angle, float length) {
     this->final_position.x = x + length * cos(angle);
     this->final_position.y = y + length * sin(angle);
 
+    this->rotate = false;
+
     int n = 1000;
     float r = 0.1;
 
@@ -150,7 +152,7 @@ FireLine::FireLine(float x, float y, float angle, float length) {
 void FireLine::draw(glm::mat4 VP) {
     Matrices.model = glm::mat4(1.0f);
     glm::mat4 translate = glm::translate(this->position); // glTranslatef
-    glm::mat4 rotate = glm::rotate((float)(this->rotation * M_PI / 180.0f), glm::vec3(1, 0, 0));
+    glm::mat4 rotate = glm::rotate((float)(this->rotation * M_PI / 180.0f), glm::vec3(0, 0, 1));
     // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
     // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
     Matrices.model *= (translate * rotate);
@@ -162,6 +164,14 @@ void FireLine::draw(glm::mat4 VP) {
 void FireLine::tick() {
     this->position.x -= speed_x;
     this->final_position.x -= speed_x;
+
+    //if (this->rotate == true) {
+    //    this->rotation += 1;
+    //    this->angle += 1 * M_PI / 180.0f;
+    //    this->final_position.x = this->position.x + this->length * cos(this->angle);
+    //    this->final_position.y = this->position.y + this->length * sin(this->angle);
+    //}
+
 }
 
 Boomerang::Boomerang(float x, float y) {

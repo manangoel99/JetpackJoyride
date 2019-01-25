@@ -33,6 +33,7 @@ class FireLine {
         void draw(glm::mat4 VP);
         void tick();
         float rotation;
+        bool rotate;
         float angle;
         float length;
     private:

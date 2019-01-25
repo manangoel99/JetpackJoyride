@@ -12,6 +12,7 @@ Coin::Coin(float x, float y, color_t color){
     this->box.width = 0.1;
     this->box.x = this->position.x;
     this->box.y = this->position.y;
+    this->speed_x = 0;
 
     int n = 1000;
     float r = 0.1;
@@ -51,6 +52,6 @@ void Coin::draw(glm::mat4 VP) {
 } 
 
 void Coin::tick() {
-    this->position.x -= 0.075;
+    this->position.x -= (speed_x);
     this->rotation += 3;
 }

@@ -14,6 +14,7 @@ class Coin {
         void set_position(float x, float y);
         void tick();
         float rotation;
+        float speed_x;
         bounding_box_t box;
       private:
         VAO *object;
