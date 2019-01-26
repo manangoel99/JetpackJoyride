@@ -20,12 +20,12 @@ Ring::Ring(float x, float y) {
                 x6, y6, z6;
 
         
-        x1 = x + this->radius * sin(theta);
-        y1 = y + this->radius * cos(theta);
+        x1 = this->radius * sin(theta);
+        y1 = this->radius * cos(theta);
         z1 = 0;
 
-        x2 = x + this->radius * sin(theta + M_PI / 180);
-        y2 = y + this->radius * cos(theta + M_PI/ 180);
+        x2 = this->radius * sin(theta + M_PI / 180);
+        y2 = this->radius * cos(theta + M_PI/ 180);
         z2 = 0;
 
         x3 = x1;
@@ -88,8 +88,11 @@ Ring::Ring(float x, float y) {
 
 void Ring::draw(glm::mat4 VP) {
     Matrices.model = glm::mat4(1.0f);
+
+    //this->position = glm::vec3(this->position.x - 1, this->position.y, 0);
     glm::mat4 translate = glm::translate(this->position); // glTranslatef
     glm::mat4 rotate = glm::rotate((float)(this->rotation * M_PI / 180.0f), glm::vec3(1, 0, 0));
+    //this->position = glm::vec3(this->position.x + 1, this->position.y, 0);
     // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
     // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
     Matrices.model *= (translate * rotate);
@@ -99,5 +102,5 @@ void Ring::draw(glm::mat4 VP) {
 }
 
 void Ring::tick() {
-    this->position.x -= this->speed_x;
+    this->position.x -= (this->speed_x / 2);
 }

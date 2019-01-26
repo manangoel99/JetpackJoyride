@@ -545,17 +545,23 @@ float compute_distance(pair <float, float> p1, pair <float, float> p2) {
 }
 
 bool detect_ring_collision(Ring ring) {
-    float dist1 = compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x * 2, ring.position.y * 2));
-    float dist2 = compute_distance(make_pair(ball1.position.x + 0.5, ball1.position.y), make_pair(ring.position.x * 2, ring.position.y * 2));
+    //float dist1 = compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x * 2, ring.position.y * 2));
+    //float dist2 = compute_distance(make_pair(ball1.position.x + 0.5, ball1.position.y), make_pair(ring.position.x * 2, ring.position.y * 2));
 
     //cout << dist1 << '\t' << dist2 << '\t' << ring.radius << '\t' << ball1.position.x << '\t' << ball1.position.y << '\t' << ring.position.x << '\t' << ring.position.y << endl;
     
-    if ((ball1.position.y <= 2 * ring.position.y + ring.radius && ball1.position.y >= 2 * ring.position.y && ball1.position.y + 0.5 >= 2 * ring.position.y + ring.radius))
+    if ((ball1.position.y <= 2 * ring.position.y + ring.radius && ball1.position.y >= ring.position.y && ball1.position.y + 0.5 >= ring.position.y + ring.radius))
     {
-        cout << dist1 << '\t' << dist2 << '\t' << ring.radius << '\t' << ball1.position.x << '\t' << ball1.position.y << '\t' << ring.position.x << '\t' << ring.position.y << endl;
+        cout << ring.radius << '\t' << ball1.position.x << '\t' << ball1.position.y << '\t' << ring.position.x << '\t' << ring.position.y << endl;
 
-        return true;
+        cout << compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x, ring.position.y)) << endl;
+        if (compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x, ring.position.y)) <= ring.radius + 0.5) {
 
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     else {
@@ -574,7 +580,6 @@ void tick_elements() {
     }
 
     //cout << score << endl;
-    ball1.tick();
 
     for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
         it->TurnWhite();
@@ -604,7 +609,8 @@ void tick_elements() {
         it->tick();
         if (detect_ring_collision(*it)) {
             cout << "BOOM" << endl;
-            quit(window);
+            //quit(window);
+            ring_trap = true;
         }
 
         if (it->position.x <= -20) {
@@ -612,6 +618,10 @@ void tick_elements() {
             it--;
             break;
         }
+    }
+
+    if (ring_trap == false) {
+        ball1.tick();
     }
 
     for (vector <Coin>::iterator it = coin_arr.begin(); it != coin_arr.end(); it++) {
@@ -651,7 +661,7 @@ void tick_elements() {
             it--;
         }
 
-        if (detect_firebeam_collision((*it)) ) {
+        if (detect_firebeam_collision((*it)) && ring_trap == false) {
             fire_list.erase(it);
             it--;
             ball1.life --;
@@ -674,7 +684,7 @@ void tick_elements() {
         //    cout << it->angle << '\t' << it->rotation << endl;
         //}
         
-        if (detect_fireline_collision(ball1, *it) ) {
+        if (detect_fireline_collision(ball1, *it) && ring_trap == false) {
             fire_lint_list.erase(it);
             it--;
             ball1.life--;
@@ -752,7 +762,7 @@ void tick_elements() {
     
     for (vector <Boomerang>::iterator it = boomerang_list.begin(); it != boomerang_list.end(); it++) {
         it->tick();
-        if (detect_boomerang_collision(*it) ) {
+        if (detect_boomerang_collision(*it) && ring_trap == false) {
             cout << "COLLISION BOOM" << endl;
             ball1.life--;
             if (ball1.life == 0) {
@@ -836,8 +846,8 @@ void tick_elements() {
         magnet_list.push_back(mag);
     }
 
-    if (num_ticks % 421 == 0) {
-        Ring ring = Ring(2, randomFloat(0, 2));
+    if (num_ticks % 822 == 0) {
+        Ring ring = Ring(4, randomFloat(0, 3));
         ring_list.push_back(ring);
 
     }
@@ -939,7 +949,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     stage_segments.push_back(stage_seg6);
     stage_segments.push_back(stage_seg7);
 
-    Ring ring = Ring(1  , 1);
+    Ring ring = Ring(2  , 1);
     ring_list.push_back(ring);
 
     while (num_coins != 15) {
@@ -992,7 +1002,8 @@ int main(int argc, char **argv) {
 
             tick_elements();
 
-            tick_input(window);
+            if (ring_trap == false)
+                tick_input(window);
         }
 
         // Poll for Keyboard and mouse events
