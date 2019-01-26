@@ -37,6 +37,7 @@ vector <CoinBoost> coin_boost_list;
 vector <Boomerang> boomerang_list;
 vector <Magnet> magnet_list;
 vector <Ring> ring_list;
+vector <Inverter> inv_list;
 
 ll score = 0;
 int stage = 1;
@@ -249,6 +250,10 @@ void draw() {
     }
 
     for (vector <Ring>::iterator it = ring_list.begin(); it != ring_list.end(); it++) {
+        it->draw(VP);
+    }
+
+    for (vector <Inverter>::iterator it = inv_list.begin(); it != inv_list.end(); it++) {
         it->draw(VP);
     }
 }
@@ -732,6 +737,22 @@ void tick_elements() {
         }
     }
 
+    for (vector<Inverter>::iterator it = inv_list.begin(); it != inv_list.end(); it++) {
+        (*it).tick();
+
+        if ((*it).position.y <= -1) {
+            inv_list.erase(it);
+            it--;
+            break;
+        }
+
+        if (detect_collision((*it).box, ball1.box)) {
+            inv_list.erase(it);
+            it--;
+            camera_rotation_angle += 180;
+        }
+    }
+
     for (vector<CoinBoost>::iterator it = coin_boost_list.begin(); it != coin_boost_list.end(); it++) {
         (*it).tick();
 
@@ -837,6 +858,11 @@ void tick_elements() {
         Ring ring = Ring(4, randomFloat(0, 2));
         ring_list.push_back(ring);
 
+    }
+
+    if (num_ticks % 259 == 0) {
+        Inverter inv = Inverter(4, randomFloat(0, 3));
+        inv_list.push_back(inv);
     }
 
 
