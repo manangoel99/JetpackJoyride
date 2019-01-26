@@ -640,7 +640,7 @@ void tick_elements() {
             coin_arr.erase(it);
             it--;
             flag = true;
-            score += 1;
+            score += it->score;
             break;
         }
 

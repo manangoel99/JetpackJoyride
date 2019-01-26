@@ -14,6 +14,21 @@ Coin::Coin(float x, float y, color_t color){
     this->box.y = this->position.y;
     this->speed_x = 0;
 
+    this->score = (rand() % 3) + 1;
+
+    if (this->score == 1) {
+        color = COLOR_BLACK;
+
+    }
+
+    if (this->score == 2) {
+        color = {0, 100, 0};
+    }
+
+    if (this->score == 3) {
+        color = {124, 252, 0};
+    }
+
     int n = 1000;
     float r = 0.1;
 
