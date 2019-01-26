@@ -885,7 +885,7 @@ void tick_elements() {
         inv_list.push_back(inv);
     }
 
-    if (num_ticks % 1029 == 0) {
+    if (num_ticks % 1377 == 0) {
         Life lif = Life(4, randomFloat(0, 3));
         life_list.push_back(lif);
     } 
