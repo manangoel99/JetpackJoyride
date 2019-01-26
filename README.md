@@ -30,8 +30,13 @@ How To Play
 =================
 - Install OpenGl using this [link](https://docs.google.com/document/d/1yz5GG5jFkeTPmeg_H8FzzBsm-5mxkxlpoWuqnj3eMd8/edit?usp=sharing)
 - Open Terminal
-- Go into the build folder
-- Run the following command
-    ```./graphics_assign1```
+- Run the following commands
+```
+    git clone https://github.com/manangoel99/JetpackJoyride.git
+    cd JetpackJoyride
+    cd build
+    make
+    ./graphics_assign1
+```
 - **Happy Gaming**
 Note -> For now the game only works on linux based platforms.
