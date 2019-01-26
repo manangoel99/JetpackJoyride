@@ -238,17 +238,14 @@ void draw() {
 
     for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
         it->draw(VP);
-        //cout << it->position.x << endl;
     }
 
     for (vector <Segment>::iterator it = life_segments.begin(); it != life_segments.end(); it++) {
         it->draw(VP);
-        //cout << it->position.x << endl;
     }
 
     for (vector <Segment>::iterator it = stage_segments.begin(); it != stage_segments.end(); it++) {
         it->draw(VP);
-        //cout << it->position.x << endl;
     }
 
     for (vector <Ring>::iterator it = ring_list.begin(); it != ring_list.end(); it++) {
@@ -262,7 +259,6 @@ void jump(Ball *ball) {
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    cout << xoffset << "\t" << yoffset << endl;
     if (yoffset == 1) {
         screen_zoom += 0.1;
     }
@@ -545,16 +541,9 @@ float compute_distance(pair <float, float> p1, pair <float, float> p2) {
 }
 
 bool detect_ring_collision(Ring ring) {
-    //float dist1 = compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x * 2, ring.position.y * 2));
-    //float dist2 = compute_distance(make_pair(ball1.position.x + 0.5, ball1.position.y), make_pair(ring.position.x * 2, ring.position.y * 2));
-
-    //cout << dist1 << '\t' << dist2 << '\t' << ring.radius << '\t' << ball1.position.x << '\t' << ball1.position.y << '\t' << ring.position.x << '\t' << ring.position.y << endl;
     
     if ((ball1.position.y <= 2 * ring.position.y + ring.radius && ball1.position.y >= ring.position.y && ball1.position.y + 0.5 >= ring.position.y + ring.radius))
     {
-        cout << ring.radius << '\t' << ball1.position.x << '\t' << ball1.position.y << '\t' << ring.position.x << '\t' << ring.position.y << endl;
-
-        cout << compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x, ring.position.y)) << endl;
         if (compute_distance(make_pair(ball1.position.x, ball1.position.y), make_pair(ring.position.x, ring.position.y)) <= ring.radius + 0.5) {
 
             return true;
@@ -570,16 +559,13 @@ bool detect_ring_collision(Ring ring) {
 }
 
 void tick_elements() {
-    //cout << ball1.life << endl;
     num_ticks++;
 
-    //cout << num_ticks << endl;
 
     if (num_ticks % 2400 == 0) {
         stage += 1;
     }
 
-    //cout << score << endl;
 
     for (vector <Segment>::iterator it = segments.begin(); it != segments.end(); it++) {
         it->TurnWhite();
@@ -605,12 +591,13 @@ void tick_elements() {
 
     ring_trap = false;
 
+    Ring r;
+
     for (vector <Ring>::iterator it = ring_list.begin(); it != ring_list.end(); it++) {
         it->tick();
         if (detect_ring_collision(*it)) {
-            cout << "BOOM" << endl;
-            //quit(window);
             ring_trap = true;
+            r = *it;
         }
 
         if (it->position.x <= -20) {
@@ -622,6 +609,11 @@ void tick_elements() {
 
     if (ring_trap == false) {
         ball1.tick();
+    }
+    else {
+        if (!isnan(sqrt((r.radius * r.radius) - (ball1.position.x - r.position.x) * (ball1.position.x - r.position.x)))) {
+            ball1.position.y = r.position.y + sqrt((r.radius * r.radius) - (ball1.position.x - r.position.x) * (ball1.position.x - r.position.x));
+        }
     }
 
     for (vector <Coin>::iterator it = coin_arr.begin(); it != coin_arr.end(); it++) {
@@ -680,9 +672,6 @@ void tick_elements() {
             it--;
         }
 
-        //if (it->rotate == true) {
-        //    cout << it->angle << '\t' << it->rotation << endl;
-        //}
         
         if (detect_fireline_collision(ball1, *it) && ring_trap == false) {
             fire_lint_list.erase(it);
@@ -691,7 +680,6 @@ void tick_elements() {
             if (ball1.life == 0) {
                 quit(window);
             }
-            cout << "COLLISION" << endl;
         }
     }
 
@@ -763,7 +751,6 @@ void tick_elements() {
     for (vector <Boomerang>::iterator it = boomerang_list.begin(); it != boomerang_list.end(); it++) {
         it->tick();
         if (detect_boomerang_collision(*it) && ring_trap == false) {
-            cout << "COLLISION BOOM" << endl;
             ball1.life--;
             if (ball1.life == 0) {
                 quit(window);
@@ -847,7 +834,7 @@ void tick_elements() {
     }
 
     if (num_ticks % 822 == 0) {
-        Ring ring = Ring(4, randomFloat(0, 3));
+        Ring ring = Ring(4, randomFloat(0, 2));
         ring_list.push_back(ring);
 
     }
@@ -1009,7 +996,6 @@ int main(int argc, char **argv) {
         // Poll for Keyboard and mouse events
         glfwPollEvents();
     }
-    //cout << num_ticks << endl;
 
     quit(window);
 }
