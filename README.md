@@ -34,7 +34,9 @@ How To Play
 ```
     git clone https://github.com/manangoel99/JetpackJoyride.git
     cd JetpackJoyride
+    mkdir build
     cd build
+    cmake ..
     make
     ./graphics_assign1
 ```
